@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive List</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab { padding: 8px 14px; border: 1px solid #ccc; cursor: pointer; }
+    .tab.active { background: #eee; font-weight: bold; }
+    .controls { margin-bottom: 15px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 4px 6px; display: flex; align-items: center; gap: 8px; }
+    .filled { font-weight: bold; }
+    .tick { color: green; }
+    .glow { background: #fff6d5; box-shadow: 0 0 6px gold; }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <div class="tab active" data-tab="Marira">Marira</div>
+    <div class="tab" data-tab="Soriris">Soriris</div>
+    <div class="tab" data-tab="Total">Total</div>
+  </div>
+
+  <div class="controls">
+    <button id="addBtn">Add Card</button>
+  </div>
+
+  <ul id="list"></ul>
+
+  <script>
+    const data = { Marira: {}, Soriris: {} };
+    let currentTab = 'Marira';
+
+    const listEl = document.getElementById('list');
+
+    function render() {
+      listEl.innerHTML = '';
+      let merged = {};
+      if (currentTab === 'Total') {
+        merged = { ...data.Marira, ...data.Soriris };
+      }
+      for (let i = 1; i <= 200; i++) {
+        const li = document.createElement('li');
+        let entry;
+        if (currentTab === 'Total') entry = merged[i];
+        else entry = data[currentTab][i];
+        li.textContent = i;
+        if (entry) {
+          li.classList.add('filled');
+          if (entry.glow) li.classList.add('glow');
+          const span = document.createElement('span');
+          span.textContent = entry.text;
+          const tick = document.createElement('span');
+          tick.textContent = '✔';
+          tick.className = 'tick';
+          li.append(span, tick);
+        }
+        listEl.appendChild(li);
+      }
+    }
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.onclick = () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        currentTab = t.dataset.tab;
+        render();
+      };
+    });
+
+    document.getElementById('addBtn').onclick = () => {
+      if (currentTab === 'Total') return;
+      const num = prompt('Number (1-200):');
+      const text = prompt('Text:');
+      const glow = confirm('Glow?');
+      if (!num || !text) return;
+      data[currentTab][num] = { text, glow };
+      render();
+    };
+
+    render();
+  </script>
+</body>
+</html>
