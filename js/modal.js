@@ -1,4 +1,5 @@
-import { data, currentTab, save } from './state.js';
+import { data, currentTab } from './state.js';
+import { saveToFirebase } from './firebase.js';
 import { render } from './render.js';
 
 const modalOverlay = document.getElementById('modalOverlay');
@@ -43,7 +44,7 @@ document.getElementById('modalSave').onclick = () => {
     count: data[currentTab][num]?.count || 1
   };
 
-  save();
+  saveToFirebase();
   closeModal();
   render();
 };
