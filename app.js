@@ -10,8 +10,6 @@ let data = {
 };
 
 let currentTab = 'Marira';
-
-// Ποιο tab προτιμά το Total όταν υπάρχουν και τα δύο
 let totalPreference = 'Marira';
 
 /* =========================
@@ -58,8 +56,12 @@ function render() {
 
     let entry = null;
     let origin = null;
+    let totalCount = 0;
 
     if (currentTab === 'Total') {
+      if (m) totalCount += m.count || 1;
+      if (s) totalCount += s.count || 1;
+
       if (m && s) {
         entry = totalPreference === 'Marira' ? m : s;
         origin = totalPreference;
@@ -79,14 +81,15 @@ function render() {
     if (filter === 'missing' && entry) continue;
 
     if (search) {
-      const txt = String(i) + (entry?.text || '');
-      if (!txt.toLowerCase().includes(search)) continue;
+      const combined = String(i) + (entry?.text || '');
+      if (!combined.toLowerCase().includes(search)) continue;
     }
 
     const li = document.createElement('li');
     li.className = 'card';
     if (entry?.glow) li.classList.add('glow');
 
+    /* LEFT */
     const left = document.createElement('div');
     left.className = 'card-left';
 
@@ -95,10 +98,49 @@ function render() {
       left.innerHTML += `<div class="card-text">${entry.text}</div>`;
     }
 
+    /* RIGHT */
     const right = document.createElement('div');
     right.className = 'card-right';
 
-    /* TOTAL ORIGIN */
+    /* COUNTER */
+    if (entry && currentTab !== 'Total') {
+      const counter = document.createElement('div');
+      counter.className = 'counter';
+
+      const minus = document.createElement('button');
+      minus.textContent = '−';
+      minus.onclick = () => {
+        if (entry.count > 1) {
+          entry.count--;
+          save();
+          render();
+        }
+      };
+
+      const value = document.createElement('span');
+      value.textContent = entry.count;
+
+      const plus = document.createElement('button');
+      plus.textContent = '+';
+      plus.onclick = () => {
+        entry.count++;
+        save();
+        render();
+      };
+
+      counter.append(minus, value, plus);
+      right.appendChild(counter);
+    }
+
+    /* TOTAL COUNTER */
+    if (currentTab === 'Total' && entry) {
+      const sum = document.createElement('div');
+      sum.className = 'counter total';
+      sum.textContent = totalCount;
+      right.appendChild(sum);
+    }
+
+    /* ORIGIN (TOTAL) */
     if (currentTab === 'Total' && entry) {
       const badge = document.createElement('span');
       badge.className = 'origin';
@@ -118,7 +160,7 @@ function render() {
       }
     }
 
-    /* ACTIONS */
+    /* ACTION ICONS */
     if (entry && currentTab !== 'Total') {
       const glow = document.createElement('span');
       glow.className = 'icon glow' + (entry.glow ? ' active' : '');
@@ -201,9 +243,15 @@ document.getElementById('modalCancel').onclick = closeModal;
 document.getElementById('modalSave').onclick = () => {
   const num = Number(modalNumber.value);
   const text = modalText.value.trim();
+
   if (!num || !text) return;
 
-  data[currentTab][num] = { text, glow: modalGlow.checked };
+  data[currentTab][num] = {
+    text,
+    glow: modalGlow.checked,
+    count: data[currentTab][num]?.count || 1
+  };
+
   save();
   closeModal();
   render();
@@ -217,14 +265,18 @@ totalSourceSelect.onchange = () => {
   render();
 };
 
+/* EXPORT */
 document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: 'application/json'
+  });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'save.json';
   a.click();
 };
 
+/* MERGE */
 document.getElementById('mergeBtn').onclick = () => {
   const input = document.createElement('input');
   input.type = 'file';
