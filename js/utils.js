@@ -1,4 +1,3 @@
-import { data, currentTab } from './state.js';
 import { data, currentTab, sortMode } from './state.js';
 
 export function calculateGlobalTotal() {
