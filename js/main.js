@@ -2,6 +2,7 @@ import { setCurrentTab, setTotalPreference, setSortMode } from './state.js';
 import { render } from './render.js';
 import { openAddModal } from './modal.js';
 import { joinRoom } from './firebase.js';
+import { exportToJSON } from './export.js';
 
 /* =========================
    INITIALIZATION
@@ -10,6 +11,8 @@ import { joinRoom } from './firebase.js';
 // ⚠️ Για αρχή σταθερό room
 // Μπορείς αργότερα να το κάνεις input
 joinRoom('DEFAULT');
+
+document.getElementById('exportBtn').onclick = exportToJSON;
 
 /* =========================
    TAB HANDLING
