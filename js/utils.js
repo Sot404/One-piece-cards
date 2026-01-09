@@ -1,4 +1,5 @@
 import { data, currentTab } from './state.js';
+import { data, currentTab, sortMode } from './state.js';
 
 export function calculateGlobalTotal() {
   let sum = 0;
@@ -33,5 +34,12 @@ export function getSortedItems() {
     items.push({ number: i, count });
   }
 
-  return items.sort((a, b) => b.count - a.count || a.number - b.number);
+  // 🔹 SORT LOGIC
+  if (sortMode === 'count') {
+    items.sort((a, b) => b.count - a.count || a.number - b.number);
+  } else {
+    items.sort((a, b) => a.number - b.number);
+  }
+
+  return items;
 }
