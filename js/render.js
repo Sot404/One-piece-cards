@@ -1,4 +1,5 @@
-import { data, currentTab, totalPreference, save } from './state.js';
+import { data, currentTab, totalPreference } from './state.js';
+import { saveToFirebase } from './firebase.js';
 import { getSortedItems, calculateGlobalTotal } from './utils.js';
 import { openEditModal } from './modal.js';
 
@@ -80,7 +81,7 @@ export function render() {
       minus.onclick = () => {
         if (entry.count > 1) {
           entry.count--;
-          save();
+          saveToFirebase();
           render();
         }
       };
@@ -92,7 +93,7 @@ export function render() {
       plus.textContent = '+';
       plus.onclick = () => {
         entry.count++;
-        save();
+        saveToFirebase();
         render();
       };
 
@@ -113,7 +114,7 @@ export function render() {
       glow.className = 'icon';
       glow.onclick = () => {
         entry.glow = !entry.glow;
-        save();
+        saveToFirebase();
         render();
       };
 
@@ -127,7 +128,7 @@ export function render() {
       del.className = 'icon';
       del.onclick = () => {
         delete data[currentTab][i];
-        save();
+        saveToFirebase();
         render();
       };
 
