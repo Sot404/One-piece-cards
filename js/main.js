@@ -1,8 +1,9 @@
 import { setCurrentTab, setTotalPreference, setSortMode } from './state.js';
 import { render } from './render.js';
 import { openAddModal } from './modal.js';
-import { joinRoom } from './firebase.js';
+import { joinRoom, mergeFromJSON } from './firebase.js';
 import { exportToJSON } from './export.js';
+import { mergeFromJSON } from './merge.js';
 
 /* =========================
    INITIALIZATION
@@ -12,6 +13,8 @@ import { exportToJSON } from './export.js';
 // Μπορείς αργότερα να το κάνεις input
 joinRoom('DEFAULT');
 
+document.getElementById('mergeBtn').onclick = mergeFromJSON;
+document.getElementById('mergeBtn').onclick = mergeFromJSON;
 document.getElementById('exportBtn').onclick = exportToJSON;
 
 /* =========================
