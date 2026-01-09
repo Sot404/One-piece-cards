@@ -2,57 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Interactive List</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <div class="tabs">
-      <button class="tab active" data-tab="Marira">Marira</button>
-      <button class="tab" data-tab="Soriris">Soriris</button>
-      <button class="tab" data-tab="Total">Total</button>
-    </div>
 
-    <div class="top-controls">
-      <input type="text" id="searchInput" placeholder="Search number or text…" />
-      <select id="filterSelect">
-        <option value="all">All</option>
-        <option value="found">Found</option>
-        <option value="missing">Missing</option>
-      </select>
-      <button id="addBtn">Add Card</button>
-      <button id="exportBtn">Export</button>
-      <button id="mergeBtn">Merge</button>
-    </div>
-  </header>
-
-  <main>
-    <ul id="list"></ul>
-  </main>
-
-  <!-- Modal -->
-  <div id="modalOverlay" class="hidden">
-    <div class="modal">
-      <h3 id="modalTitle">Add Card</h3>
-      <label>
-        Number (1–200)
-        <input type="number" id="modalNumber" min="1" max="200" />
-      </label>
-      <label>
-        Description
-        <textarea id="modalText"></textarea>
-      </label>
-      <label class="checkbox">
-        <input type="checkbox" id="modalGlow" /> Glow (💎)
-      </label>
-      <div class="modal-actions">
-        <button id="modalCancel">Cancel</button>
-        <button id="modalSave">Save</button>
-      </div>
-    </div>
+<header>
+  <div class="tabs">
+    <button class="tab active" data-tab="Marira">Marira</button>
+    <button class="tab" data-tab="Soriris">Soriris</button>
+    <button class="tab" data-tab="Total">Total</button>
   </div>
 
-  <script src="app.js"></script>
+  <div class="top-controls">
+    <input type="text" id="searchInput" placeholder="Search number or text…" />
+
+    <select id="filterSelect">
+      <option value="all">All</option>
+      <option value="found">Found</option>
+      <option value="missing">Missing</option>
+    </select>
+
+    <!-- ΕΜΦΑΝΙΖΕΤΑΙ ΜΟΝΟ ΣΤΟ TOTAL -->
+    <select id="totalSourceSelect" class="hidden">
+      <option value="Marira">Prefer Marira</option>
+      <option value="Soriris">Prefer Soriris</option>
+    </select>
+
+    <button id="addBtn">Add Card</button>
+    <button id="exportBtn">Export</button>
+    <button id="mergeBtn">Merge</button>
+  </div>
+</header>
+
+<main>
+  <ul id="list"></ul>
+</main>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="hidden">
+  <div class="modal">
+    <h3 id="modalTitle">Add Card</h3>
+
+    <label>
+      Number (1–200)
+      <input type="number" id="modalNumber" min="1" max="200">
+    </label>
+
+    <label>
+      Description
+      <textarea id="modalText"></textarea>
+    </label>
+
+    <label class="checkbox">
+      <input type="checkbox" id="modalGlow"> Glow (💎)
+    </label>
+
+    <div class="modal-actions">
+      <button id="modalCancel">Cancel</button>
+      <button id="modalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
