@@ -4,28 +4,30 @@
 
 const STORAGE_KEY = 'interactive-list-save';
 
-// Main application state
 let data = {
   Marira: {},
   Soriris: {}
 };
 
 let currentTab = 'Marira';
-let editMode = null; // null | number being edited
+
+// Ποιο tab προτιμά το Total όταν υπάρχουν και τα δύο
+let totalPreference = 'Marira';
 
 /* =========================
    DOM REFERENCES
    ========================= */
 
 const listEl = document.getElementById('list');
+const searchInput = document.getElementById('searchInput');
+const filterSelect = document.getElementById('filterSelect');
+const totalSourceSelect = document.getElementById('totalSourceSelect');
+
 const modalOverlay = document.getElementById('modalOverlay');
 const modalTitle = document.getElementById('modalTitle');
 const modalNumber = document.getElementById('modalNumber');
 const modalText = document.getElementById('modalText');
 const modalGlow = document.getElementById('modalGlow');
-
-const searchInput = document.getElementById('searchInput');
-const filterSelect = document.getElementById('filterSelect');
 
 /* =========================
    LOCAL STORAGE
@@ -41,7 +43,7 @@ function load() {
 }
 
 /* =========================
-   RENDERING
+   RENDER
    ========================= */
 
 function render() {
@@ -50,49 +52,74 @@ function render() {
   const search = searchInput.value.toLowerCase();
   const filter = filterSelect.value;
 
-  // Merge data for Total tab
-  const source = currentTab === 'Total'
-    ? { ...data.Marira, ...data.Soriris }
-    : data[currentTab];
-
   for (let i = 1; i <= 200; i++) {
-    const entry = source[i];
+    const m = data.Marira[i];
+    const s = data.Soriris[i];
 
-    // Filter logic
+    let entry = null;
+    let origin = null;
+
+    if (currentTab === 'Total') {
+      if (m && s) {
+        entry = totalPreference === 'Marira' ? m : s;
+        origin = totalPreference;
+      } else if (m) {
+        entry = m;
+        origin = 'Marira';
+      } else if (s) {
+        entry = s;
+        origin = 'Soriris';
+      }
+    } else {
+      entry = data[currentTab][i];
+      origin = currentTab;
+    }
+
     if (filter === 'found' && !entry) continue;
     if (filter === 'missing' && entry) continue;
 
     if (search) {
-      const s = String(i) + (entry?.text || '');
-      if (!s.toLowerCase().includes(search)) continue;
+      const txt = String(i) + (entry?.text || '');
+      if (!txt.toLowerCase().includes(search)) continue;
     }
 
     const li = document.createElement('li');
     li.className = 'card';
     if (entry?.glow) li.classList.add('glow');
 
-    /* Left side (number + text) */
     const left = document.createElement('div');
     left.className = 'card-left';
 
-    const num = document.createElement('div');
-    num.className = 'card-number';
-    num.textContent = `#${i}`;
-    left.appendChild(num);
-
+    left.innerHTML = `<div class="card-number">#${i}</div>`;
     if (entry) {
-      const txt = document.createElement('div');
-      txt.className = 'card-text';
-      txt.textContent = entry.text;
-      left.appendChild(txt);
+      left.innerHTML += `<div class="card-text">${entry.text}</div>`;
     }
 
-    /* Right side (icons) */
     const right = document.createElement('div');
     right.className = 'card-right';
 
+    /* TOTAL ORIGIN */
+    if (currentTab === 'Total' && entry) {
+      const badge = document.createElement('span');
+      badge.className = 'origin';
+      badge.textContent = origin === 'Marira' ? 'M' : 'S';
+      right.appendChild(badge);
+
+      if (m && s) {
+        const toggle = document.createElement('span');
+        toggle.className = 'origin-toggle';
+        toggle.textContent = '>';
+        toggle.onclick = () => {
+          totalPreference = origin === 'Marira' ? 'Soriris' : 'Marira';
+          totalSourceSelect.value = totalPreference;
+          render();
+        };
+        right.appendChild(toggle);
+      }
+    }
+
+    /* ACTIONS */
     if (entry && currentTab !== 'Total') {
-      // Glow toggle
       const glow = document.createElement('span');
       glow.className = 'icon glow' + (entry.glow ? ' active' : '');
       glow.textContent = '💎';
@@ -102,13 +129,11 @@ function render() {
         render();
       };
 
-      // Edit
       const edit = document.createElement('span');
       edit.className = 'icon edit';
       edit.textContent = '✏';
       edit.onclick = () => openEditModal(i, entry);
 
-      // Delete
       const del = document.createElement('span');
       del.className = 'icon delete';
       del.textContent = '🗑';
@@ -127,11 +152,10 @@ function render() {
 }
 
 /* =========================
-   MODAL HANDLING
+   MODAL
    ========================= */
 
 function openAddModal() {
-  editMode = null;
   modalTitle.textContent = 'Add Card';
   modalNumber.disabled = false;
   modalNumber.value = '';
@@ -140,10 +164,9 @@ function openAddModal() {
   modalOverlay.classList.remove('hidden');
 }
 
-function openEditModal(number, entry) {
-  editMode = number;
+function openEditModal(num, entry) {
   modalTitle.textContent = 'Edit Card';
-  modalNumber.value = number;
+  modalNumber.value = num;
   modalNumber.disabled = true;
   modalText.value = entry.text;
   modalGlow.checked = entry.glow;
@@ -155,82 +178,70 @@ function closeModal() {
 }
 
 /* =========================
-   EVENT LISTENERS
+   EVENTS
    ========================= */
 
-// Tabs
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentTab = tab.dataset.tab;
+
+    totalSourceSelect.classList.toggle('hidden', currentTab !== 'Total');
     render();
   };
 });
 
-// Add card
 document.getElementById('addBtn').onclick = () => {
   if (currentTab !== 'Total') openAddModal();
 };
 
-// Modal buttons
 document.getElementById('modalCancel').onclick = closeModal;
 
 document.getElementById('modalSave').onclick = () => {
-  const number = Number(modalNumber.value);
+  const num = Number(modalNumber.value);
   const text = modalText.value.trim();
+  if (!num || !text) return;
 
-  if (!number || number < 1 || number > 200 || !text) return;
-
-  data[currentTab][number] = {
-    text,
-    glow: modalGlow.checked
-  };
-
+  data[currentTab][num] = { text, glow: modalGlow.checked };
   save();
   closeModal();
   render();
 };
 
-// Search & filter
 searchInput.oninput = render;
 filterSelect.onchange = render;
 
-// Export
-document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'save.json';
-  a.click();
-  URL.revokeObjectURL(url);
+totalSourceSelect.onchange = () => {
+  totalPreference = totalSourceSelect.value;
+  render();
 };
 
-// Merge import
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'save.json';
+  a.click();
+};
+
 document.getElementById('mergeBtn').onclick = () => {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/json';
   input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const incoming = JSON.parse(reader.result);
-        ['Marira', 'Soriris'].forEach(tab => {
-          for (const key in incoming[tab]) {
-            if (!data[tab][key]) data[tab][key] = incoming[tab][key];
-          }
-        });
-        save();
-        render();
-      } catch {
-        alert('Invalid file');
-      }
+      const incoming = JSON.parse(reader.result);
+      ['Marira', 'Soriris'].forEach(tab => {
+        for (const k in incoming[tab]) {
+          if (!data[tab][k]) data[tab][k] = incoming[tab][k];
+        }
+      });
+      save();
+      render();
     };
-    reader.readAsText(file);
+    reader.readAsText(e.target.files[0]);
   };
   input.click();
 };
