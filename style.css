@@ -190,6 +190,42 @@ li.card {
   gap: 10px;
 }
 
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #2a2a2a;
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-right: 8px;
+}
+
+.counter button {
+  background: #444;
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.counter button:hover {
+  background: #666;
+}
+
+.counter span {
+  min-width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.counter.total {
+  background: #3a2f15;
+  color: gold;
+  font-weight: bold;
+}
+
 /* =========================
    MOBILE LAYOUT
    ========================= */
