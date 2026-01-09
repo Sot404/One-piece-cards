@@ -12,7 +12,6 @@ export function joinRoom(roomCode) {
 
   const roomRef = ref(window.firebaseDB, `rooms/${roomCode}`);
 
-  // Live sync
   onValue(roomRef, snapshot => {
     if (snapshot.exists()) {
       const incoming = snapshot.val();
@@ -35,7 +34,11 @@ export function saveToFirebase() {
     Marira: data.Marira,
     Soriris: data.Soriris
   });
-   
+}
+
+/* =========================
+   MERGE FROM ROOM
+   ========================= */
 export async function mergeFromRoom(roomCode) {
   const refRoom = ref(window.firebaseDB, `rooms/${roomCode}`);
   const snap = await get(refRoom);
@@ -57,6 +60,4 @@ export async function mergeFromRoom(roomCode) {
 
   saveToFirebase();
   render();
-}
-   
 }
