@@ -5,7 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Interactive List</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- FIREBASE INIT -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBWWmGswBH-vV6B3LI-DbApXW0h3FnMMzE",
+      authDomain: "one-piece-by-soriris.firebaseapp.com",
+      databaseURL: "https://one-piece-by-soriris-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "one-piece-by-soriris",
+      storageBucket: "one-piece-by-soriris.firebasestorage.app",
+      messagingSenderId: "523884705326",
+      appId: "1:523884705326:web:b2b5e1a6487cc0e3fb11bf"
+    };
+
+    window.firebaseApp = initializeApp(firebaseConfig);
+    window.firebaseDB = getDatabase(window.firebaseApp);
+  </script>
 </head>
+
 <body>
 
 <header>
@@ -29,7 +49,6 @@
       <option value="count">Sort by count</option>
     </select>
 
-    <!-- ΕΜΦΑΝΙΖΕΤΑΙ ΜΟΝΟ ΣΤΟ TOTAL -->
     <select id="totalSourceSelect" class="hidden">
       <option value="Marira">Prefer Marira</option>
       <option value="Soriris">Prefer Soriris</option>
@@ -72,6 +91,7 @@
   </div>
 </div>
 
+<!-- MAIN ENTRY -->
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
