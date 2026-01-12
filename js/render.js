@@ -72,6 +72,9 @@ export function render() {
 
     const li = document.createElement('li');
     li.className = 'card';
+    if (origin) {
+      li.classList.add(origin.toLowerCase());
+    }
     if (!entry && currentTab !== 'Total') {
       li.onclick = () => openAddModal(i);
     }
