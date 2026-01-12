@@ -55,6 +55,7 @@
     </select>
 
     <button id="addBtn">Add Card</button>
+    <button id="tradeBtn">Trade</button>
     <button id="exportBtn">Export</button>
     <button id="mergeBtn">Merge</button>
   </div>
@@ -65,7 +66,7 @@
   <ul id="list"></ul>
 </main>
 
-<!-- MODAL -->
+<!-- ADD / EDIT MODAL -->
 <div id="modalOverlay" class="hidden">
   <div class="modal">
     <h3 id="modalTitle">Add Card</h3>
@@ -91,7 +92,31 @@
   </div>
 </div>
 
+<!-- TRADE MODAL -->
+<div id="tradeOverlay" class="hidden">
+  <div class="modal trade">
+    <h2>Trade</h2>
+
+    <div class="trade-columns">
+      <div>
+        <h3>Marira → Soriris</h3>
+        <ul id="tradeMarira"></ul>
+      </div>
+
+      <div>
+        <h3>Soriris → Marira</h3>
+        <ul id="tradeSoriris"></ul>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="tradeClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- MAIN ENTRY -->
 <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
