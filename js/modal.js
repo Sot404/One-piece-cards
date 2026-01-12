@@ -1,6 +1,7 @@
 import { data, currentTab } from './state.js';
 import { saveToFirebase } from './firebase.js';
 import { render } from './render.js';
+import { CARD_DESCRIPTIONS } from './utils.js';
 
 const modalOverlay = document.getElementById('modalOverlay');
 const modalTitle = document.getElementById('modalTitle');
@@ -34,12 +35,19 @@ document.getElementById('modalCancel').onclick = closeModal;
 
 document.getElementById('modalSave').onclick = () => {
   const num = Number(modalNumber.value);
-  const text = modalText.value.trim();
+  const userText = modalText.value.trim();
 
-  if (!num || !text) return;
+  if (!num) return;
+
+  const finalText =
+    userText ||
+    CARD_DESCRIPTIONS[num] ||
+    '';
+
+  if (!finalText) return;
 
   data[currentTab][num] = {
-    text,
+    text: finalText,
     glow: modalGlow.checked,
     count: data[currentTab][num]?.count || 1
   };
@@ -48,3 +56,4 @@ document.getElementById('modalSave').onclick = () => {
   closeModal();
   render();
 };
+
