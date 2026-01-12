@@ -1,6 +1,6 @@
 import { data, currentTab, totalPreference } from './state.js';
 import { saveToFirebase } from './firebase.js';
-import { getSortedItems, calculateGlobalTotal } from './utils.js';
+import { getSortedItems, calculateGlobalTotal, getTabStats } from './utils.js';
 import { openEditModal, openAddModal } from './modal.js';
 
 const listEl = document.getElementById('list');
@@ -145,6 +145,16 @@ export function render() {
       right.append(glow, edit, del);
     }
 
+    document.querySelectorAll('.tab').forEach(tabEl => {
+      const tab = tabEl.dataset.tab;
+    
+      if (tab === 'Total') return;
+    
+      const { found, total, missing } = getTabStats(tab);
+    
+      tabEl.textContent = `${tab} ${found}/${total} (${missing} missing)`;
+    });
+    
     li.append(left, right);
     listEl.appendChild(li);
   }
