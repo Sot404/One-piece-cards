@@ -259,3 +259,33 @@ export function getTabStats(tab) {
     missing: 200 - found
   };
 }
+
+export function getTradeCandidates() {
+  const marira = [];
+  const soriris = [];
+
+  for (let i = 1; i <= 200; i++) {
+    const m = data.Marira[i];
+    const s = data.Soriris[i];
+
+    // Marira -> Soriris
+    if (m && m.count >= 2 && !s) {
+      marira.push({
+        number: i,
+        count: m.count,
+        text: m.text
+      });
+    }
+
+    // Soriris -> Marira
+    if (s && s.count >= 2 && !m) {
+      soriris.push({
+        number: i,
+        count: s.count,
+        text: s.text
+      });
+    }
+  }
+
+  return { marira, soriris };
+}
