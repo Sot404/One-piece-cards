@@ -62,7 +62,7 @@ export function render() {
 
     const li = document.createElement('li');
     li.className = 'card';
-    if (entry && currentTab !== 'Total') {
+    if (!entry && currentTab !== 'Total') {
       li.onclick = () => openEditModal(i, entry);
     }
     if (entry?.glow) li.classList.add('glow');
