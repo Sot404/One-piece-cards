@@ -82,7 +82,7 @@ export function render() {
       const minus = document.createElement('button');
       minus.textContent = '−';
       minus.onclick = () => {
-        e.stopPropagation();
+        
         if (entry.count > 1) {
           entry.count--;
           saveToFirebase();
@@ -96,7 +96,7 @@ export function render() {
       const plus = document.createElement('button');
       plus.textContent = '+';
       plus.onclick = () => {
-        e.stopPropagation();
+        
         entry.count++;
         saveToFirebase();
         render();
@@ -118,7 +118,7 @@ export function render() {
       glow.textContent = '💎';
       glow.className = 'icon';
       glow.onclick = () => {
-        e.stopPropagation();
+        
         entry.glow = !entry.glow;
         saveToFirebase();
         render();
@@ -128,7 +128,7 @@ export function render() {
       edit.textContent = '✏';
       edit.className = 'icon';
       edit.onclick = () => {
-        e.stopPropagation();
+        
         openEditModal(i, entry);
       }
 
@@ -136,7 +136,7 @@ export function render() {
       del.textContent = '🗑';
       del.className = 'icon';
       del.onclick = () => {
-        e.stopPropagation();
+        
         delete data[currentTab][i];
         saveToFirebase();
         render();
