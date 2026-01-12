@@ -71,7 +71,6 @@ document.getElementById('totalSourceSelect').onchange = e => {
 
 import { data } from './state.js';
 import { saveToFirebase } from './firebase.js';
-import { render } from './render.js';
 
 window.__data = data;
 window.__save = saveToFirebase;
