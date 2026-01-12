@@ -4,6 +4,7 @@ import { openAddModal } from './modal.js';
 import { joinRoom, mergeFromRoom } from './firebase.js';
 import { exportToJSON } from './export.js';
 import { mergeFromJSON } from './merge.js';
+import { openTradeModal } from './trade.js';
 
 /* =========================
    INITIALIZATION
@@ -68,3 +69,5 @@ document.getElementById('totalSourceSelect').onchange = e => {
   setTotalPreference(e.target.value);
   render();
 };
+
+document.getElementById('tradeBtn').onclick = openTradeModal;
