@@ -2,6 +2,11 @@
    GLOBAL STYLES
    ========================= */
 
+:root {
+  --soriris-blue: #4fa3ff;
+  --marira-pink: #ff6fae;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -141,6 +146,22 @@ li.card {
   cursor: pointer;
   font-weight: bold;
   color: #7bc6ff;
+}
+
+.card.marira {
+  border-left: 4px solid var(--marira-pink);
+}
+
+.card.soriris {
+  border-left: 4px solid var(--soriris-blue);
+}
+
+.card.marira .card-number {
+  color: var(--marira-pink);
+}
+
+.card.soriris .card-number {
+  color: var(--soriris-blue);
 }
 
 /* =========================
