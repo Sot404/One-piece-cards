@@ -68,3 +68,11 @@ document.getElementById('totalSourceSelect').onchange = e => {
   setTotalPreference(e.target.value);
   render();
 };
+
+import { data } from './state.js';
+import { saveToFirebase } from './firebase.js';
+import { render } from './render.js';
+
+window.__data = data;
+window.__save = saveToFirebase;
+window.__render = render;
