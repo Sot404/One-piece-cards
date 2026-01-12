@@ -12,6 +12,16 @@ const totalSourceSelect = document.getElementById('totalSourceSelect');
 export function render() {
   listEl.innerHTML = '';
 
+  document.querySelectorAll('.tab').forEach(tabEl => {
+    const tab = tabEl.dataset.tab;
+   
+    if (tab === 'Total') return;
+    
+    const { found, total, missing } = getTabStats(tab);
+    
+    tabEl.textContent = `${tab} ${found}/${total} (${missing} missing)`;
+  });
+   
   const search = searchInput.value.toLowerCase();
   const filter = filterSelect.value;
 
@@ -145,16 +155,6 @@ export function render() {
       right.append(glow, edit, del);
     }
 
-    document.querySelectorAll('.tab').forEach(tabEl => {
-      const tab = tabEl.dataset.tab;
-    
-      if (tab === 'Total') return;
-    
-      const { found, total, missing } = getTabStats(tab);
-    
-      tabEl.textContent = `${tab} ${found}/${total} (${missing} missing)`;
-    });
-    
     li.append(left, right);
     listEl.appendChild(li);
   }
