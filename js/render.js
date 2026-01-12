@@ -1,7 +1,7 @@
 import { data, currentTab, totalPreference } from './state.js';
 import { saveToFirebase } from './firebase.js';
 import { getSortedItems, calculateGlobalTotal } from './utils.js';
-import { openEditModal } from './modal.js';
+import { openEditModal, openAddModal } from './modal.js';
 
 const listEl = document.getElementById('list');
 const globalTotalEl = document.getElementById('globalTotal');
@@ -63,7 +63,7 @@ export function render() {
     const li = document.createElement('li');
     li.className = 'card';
     if (!entry && currentTab !== 'Total') {
-      li.onclick = () => openEditModal(i, entry);
+      li.onclick = () => openAddModal(i);
     }
     if (entry?.glow) li.classList.add('glow');
 
