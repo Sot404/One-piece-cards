@@ -62,6 +62,9 @@ export function render() {
 
     const li = document.createElement('li');
     li.className = 'card';
+    if (entry && currentTab !== 'Total') {
+      li.onclick = () => openEditModal(i, entry);
+    }
     if (entry?.glow) li.classList.add('glow');
 
     const left = document.createElement('div');
@@ -79,6 +82,7 @@ export function render() {
       const minus = document.createElement('button');
       minus.textContent = '−';
       minus.onclick = () => {
+        e.stopPropagation();
         if (entry.count > 1) {
           entry.count--;
           saveToFirebase();
@@ -92,6 +96,7 @@ export function render() {
       const plus = document.createElement('button');
       plus.textContent = '+';
       plus.onclick = () => {
+        e.stopPropagation();
         entry.count++;
         saveToFirebase();
         render();
@@ -113,6 +118,7 @@ export function render() {
       glow.textContent = '💎';
       glow.className = 'icon';
       glow.onclick = () => {
+        e.stopPropagation();
         entry.glow = !entry.glow;
         saveToFirebase();
         render();
@@ -121,12 +127,16 @@ export function render() {
       const edit = document.createElement('span');
       edit.textContent = '✏';
       edit.className = 'icon';
-      edit.onclick = () => openEditModal(i, entry);
+      edit.onclick = () => {
+        e.stopPropagation();
+        openEditModal(i, entry);
+      }
 
       const del = document.createElement('span');
       del.textContent = '🗑';
       del.className = 'icon';
       del.onclick = () => {
+        e.stopPropagation();
         delete data[currentTab][i];
         saveToFirebase();
         render();
