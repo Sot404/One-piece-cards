@@ -245,3 +245,17 @@ export function getSortedItems() {
 
   return items;
 }
+
+export function getTabStats(tab) {
+  let found = 0;
+
+  for (let i = 1; i <= 200; i++) {
+    if (data[tab]?.[i]) found++;
+  }
+
+  return {
+    found,
+    total: 200,
+    missing: 200 - found
+  };
+}
