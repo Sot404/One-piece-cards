@@ -9,10 +9,16 @@ const modalNumber = document.getElementById('modalNumber');
 const modalText = document.getElementById('modalText');
 const modalGlow = document.getElementById('modalGlow');
 
-export function openAddModal() {
+export function openAddModal(prefillNumber = null) {
   modalTitle.textContent = 'Add Card';
   modalNumber.disabled = false;
-  modalNumber.value = '';
+
+  if (prefillNumber) {
+    modalNumber.value = prefillNumber;
+  } else {
+    modalNumber.value = '';
+  }
+
   modalText.value = '';
   modalGlow.checked = false;
   modalOverlay.classList.remove('hidden');
