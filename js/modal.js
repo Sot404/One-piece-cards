@@ -1,7 +1,7 @@
 import { data, currentTab } from './state.js';
 import { saveToFirebase } from './firebase.js';
 import { render } from './render.js';
-import { CARD_DESCRIPTIONS } from './utils.js';
+import { CARD_DESCRIPTIONS } from './Descriptions.js';
 
 const modalOverlay = document.getElementById('modalOverlay');
 const modalTitle = document.getElementById('modalTitle');
