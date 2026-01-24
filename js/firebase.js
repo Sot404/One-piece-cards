@@ -115,7 +115,7 @@ export async function joinRoom(roomCode) {
     // IMPORTANT: εδώ κρατάμε μόνο το "Marira" κομμάτι του joined room ή όλο;
     // Για το use-case σου (2 tabs = 2 rooms), θέλουμε το joined room να “γεμίζει” το Soriris tab.
     // Άρα διαβάζουμε incoming.Marira (ή incoming.items) θα ήταν καλύτερα, αλλά κρατάμε το ήδη υπάρχον schema:
-    data.Soriris = incoming.Marira || incoming.Soriris || {}; // fallback
+    data.Soriris = incoming.Marira || {}; // fallback
     render();
   });
 }
@@ -142,23 +142,20 @@ export async function renameMyRoom(newName) {
    - Total δεν γράφει
    ========================= */
 export async function saveToFirebase() {
-  if (currentTab === "Total") return;
+  // Δεν αποθηκεύουμε τίποτα όταν βλέπουμε Total ή Joined (read-only)
+  if (currentTab !== "Marira") return;
 
-  const roomId = tabRoomIds[currentTab];
+  const roomId = tabRoomIds.Marira;
   if (!roomId) return;
 
-  const roomRef = ref(window.firebaseDB, `rooms/${roomId}`);
-
-  // ΠΡΟΣΟΧΗ: κρατάμε το υπάρχον schema ώστε να μην ξαναγράψουμε πολλά:
-  // Για Marira tab γράφουμε Marira data, για Soriris tab γράφουμε Marira στο joined room?
-  // Εδώ επιλέγω το πιο “καθαρό”: κάθε room κρατάει ΜΟΝΟ το tab που το αντιπροσωπεύει.
-  // Άρα:
-  // - στο my room γράφουμε Marira: data.Marira
-  // - στο joined room (αν είσαι owner) γράφουμε Marira: data.Soriris (ώστε να έχει κι αυτό ένα dataset)
-  const payload =
-    currentTab === "Marira"
-      ? { Marira: data.Marira, meta: { updatedAt: Date.now() } }
-      : { Marira: data.Soriris, meta: { updatedAt: Date.now() } };
-
-  await update(roomRef, payload);
+  try {
+    await update(ref(window.firebaseDB, `rooms/${roomId}`), {
+      Marira: data.Marira,
+      meta: { updatedAt: Date.now() }
+    });
+  } catch (e) {
+    console.error("Save failed:", e);
+    alert("Save failed (permission?)");
+  }
 }
+
