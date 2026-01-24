@@ -1,30 +1,61 @@
-import { setCurrentTab, setTotalPreference, setSortMode } from './state.js';
+import { setCurrentTab, setTotalPreference, setSortMode, data, tabLabels, tabRoomIds } from './state.js';
 import { render } from './render.js';
 import { openAddModal } from './modal.js';
-import { joinRoom, mergeFromRoom } from './firebase.js';
-import { exportToJSON } from './export.js';
-import { mergeFromJSON } from './merge.js';
+import { ensureAuth, getOrCreateMyRoomId, listenMyRoom, joinRoom, renameMyRoom } from './firebase.js';
 import { openTradeModal } from './trade.js';
 
 /* =========================
    INITIALIZATION
    ========================= */
+(async () => {
+  await ensureAuth();
 
-// ⚠️ Για αρχή σταθερό room
-// Μπορείς αργότερα να το κάνεις input
-joinRoom('DEFAULT');
+  // δημιουργεί/βρίσκει το δικό σου room και κάνει listen
+  const myRoomId = await getOrCreateMyRoomId('My Room');
+  listenMyRoom(myRoomId);
 
-document.getElementById('mergeBtn').onclick = () => {
-  const code = prompt('Merge from room:');
-  if (code) mergeFromRoom(code.trim());
+  render();
+})();
+
+/* =========================
+   JOIN ROOM (αντί για merge)
+   ========================= */
+document.getElementById('mergeBtn').onclick = async () => {
+  const code = prompt('Join room code:');
+  if (code) {
+    await joinRoom(code.trim());
+    render();
+  }
 };
-document.getElementById('mergeBtn').onclick = mergeFromJSON;
-document.getElementById('exportBtn').onclick = exportToJSON;
+
+/* =========================
+   SAVE LOCAL (αντί για export)
+   ========================= */
+document.getElementById('exportBtn').onclick = () => {
+  const snapshot = {
+    savedAt: Date.now(),
+    tabLabels,
+    tabRoomIds,
+    data
+  };
+  localStorage.setItem('op_rooms_local_v1', JSON.stringify(snapshot));
+  alert('Saved locally ✅');
+};
+
+/* =========================
+   RENAME MY ROOM
+   ========================= */
+const renameBtn = document.getElementById('renameBtn');
+if (renameBtn) {
+  renameBtn.onclick = async () => {
+    const name = prompt('Rename your room:');
+    if (name) await renameMyRoom(name.trim());
+  };
+}
 
 /* =========================
    TAB HANDLING
    ========================= */
-
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll('.tab').forEach(t =>
@@ -40,7 +71,6 @@ document.querySelectorAll('.tab').forEach(tab => {
 /* =========================
    SORT
    ========================= */
-
 document.getElementById('sortSelect').onchange = e => {
   setSortMode(e.target.value);
   render();
@@ -49,7 +79,6 @@ document.getElementById('sortSelect').onchange = e => {
 /* =========================
    ADD CARD
    ========================= */
-
 document.getElementById('addBtn').onclick = () => {
   openAddModal();
 };
@@ -57,17 +86,18 @@ document.getElementById('addBtn').onclick = () => {
 /* =========================
    SEARCH & FILTER
    ========================= */
-
 document.getElementById('searchInput').oninput = render;
 document.getElementById('filterSelect').onchange = render;
 
 /* =========================
    TOTAL TAB PREFERENCE
    ========================= */
-
 document.getElementById('totalSourceSelect').onchange = e => {
   setTotalPreference(e.target.value);
   render();
 };
 
+/* =========================
+   TRADE
+   ========================= */
 document.getElementById('tradeBtn').onclick = openTradeModal;
