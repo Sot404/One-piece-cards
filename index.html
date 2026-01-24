@@ -30,8 +30,8 @@
 
 <header>
   <div class="tabs">
-    <button class="tab active" data-tab="Marira">Marira</button>
-    <button class="tab" data-tab="Soriris">Soriris</button>
+    <button class="tab active" data-tab="Marira">My Room</button>
+    <button class="tab" data-tab="Soriris">Joined Room</button>
     <button class="tab" data-tab="Total">Total</button>
   </div>
 
@@ -50,14 +50,21 @@
     </select>
 
     <select id="totalSourceSelect" class="hidden">
-      <option value="Marira">Prefer Marira</option>
-      <option value="Soriris">Prefer Soriris</option>
+      <option value="Marira">Prefer My Room</option>
+      <option value="Soriris">Prefer Joined Room</option>
     </select>
 
     <button id="addBtn">Add Card</button>
     <button id="tradeBtn">Trade</button>
-    <button id="exportBtn">Export</button>
-    <button id="mergeBtn">Merge</button>
+
+    <!-- NEW: Save local -->
+    <button id="exportBtn" title="Save locally">💾</button>
+
+    <!-- NEW: Join -->
+    <button id="mergeBtn">Join</button>
+
+    <!-- NEW: Rename my room -->
+    <button id="renameBtn" title="Rename my room">Rename</button>
   </div>
 </header>
 
