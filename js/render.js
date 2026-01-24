@@ -12,17 +12,25 @@ const totalSourceSelect = document.getElementById('totalSourceSelect');
 export function render() {
   listEl.innerHTML = '';
 
+  // 1) Update tab labels + stats
   document.querySelectorAll('.tab').forEach(tabEl => {
     const tab = tabEl.dataset.tab;
-   
+
     if (tab === 'Total') return;
-    
+
     const { found, total, missing } = getTabStats(tab);
     const label = tabLabels?.[tab] || tab;
-    
-    tabEl.textContent = `${tab} ${found}/${total} (${missing} missing)`;
+
+    // ✅ Εδώ ήταν το bug: πρέπει να δείχνει label, όχι tab
+    tabEl.textContent = `${label} ${found}/${total} (${missing} missing)`;
   });
-   
+
+  // 2) Update "Prefer ..." dropdown labels
+  const optMarira = totalSourceSelect.querySelector('option[value="Marira"]');
+  const optSoriris = totalSourceSelect.querySelector('option[value="Soriris"]');
+  if (optMarira) optMarira.textContent = `Prefer ${tabLabels?.Marira || 'Marira'}`;
+  if (optSoriris) optSoriris.textContent = `Prefer ${tabLabels?.Soriris || 'Soriris'}`;
+
   const search = searchInput.value.toLowerCase();
   const filter = filterSelect.value;
 
@@ -73,9 +81,8 @@ export function render() {
 
     const li = document.createElement('li');
     li.className = 'card';
-    if (origin) {
-      li.classList.add(origin.toLowerCase());
-    }
+    if (origin) li.classList.add(origin.toLowerCase());
+
     if (!entry && currentTab !== 'Total') {
       li.onclick = () => openAddModal(i);
     }
@@ -96,7 +103,6 @@ export function render() {
       const minus = document.createElement('button');
       minus.textContent = '−';
       minus.onclick = () => {
-        
         if (entry.count > 1) {
           entry.count--;
           saveToFirebase();
@@ -110,7 +116,6 @@ export function render() {
       const plus = document.createElement('button');
       plus.textContent = '+';
       plus.onclick = () => {
-        
         entry.count++;
         saveToFirebase();
         render();
@@ -132,7 +137,6 @@ export function render() {
       glow.textContent = '💎';
       glow.className = 'icon';
       glow.onclick = () => {
-        
         entry.glow = !entry.glow;
         saveToFirebase();
         render();
@@ -142,15 +146,13 @@ export function render() {
       edit.textContent = '✏';
       edit.className = 'icon';
       edit.onclick = () => {
-        
         openEditModal(i, entry);
-      }
+      };
 
       const del = document.createElement('span');
       del.textContent = '🗑';
       del.className = 'icon';
       del.onclick = () => {
-        
         delete data[currentTab][i];
         saveToFirebase();
         render();
