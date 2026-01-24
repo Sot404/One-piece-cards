@@ -1,4 +1,4 @@
-import { data, currentTab, totalPreference } from './state.js';
+import { data, currentTab, totalPreference, tabLabels } from './state.js';
 import { saveToFirebase } from './firebase.js';
 import { getSortedItems, calculateGlobalTotal, getTabStats } from './utils.js';
 import { openEditModal, openAddModal } from './modal.js';
@@ -18,6 +18,7 @@ export function render() {
     if (tab === 'Total') return;
     
     const { found, total, missing } = getTabStats(tab);
+    const label = tabLabels?.[tab] || tab;
     
     tabEl.textContent = `${tab} ${found}/${total} (${missing} missing)`;
   });
