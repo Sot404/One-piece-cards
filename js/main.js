@@ -14,7 +14,8 @@ import {
   getOrCreateMyRoomId,
   listenMyRoom,
   joinRoom,
-  renameMyRoom
+  renameMyRoom,
+  importDefaultIntoMyRoom
 } from './firebase.js';
 import { openTradeModal } from './trade.js';
 
@@ -39,42 +40,59 @@ function setJoinedEnabled(enabled) {
   setJoinedEnabled(false);
   if (statusText) statusText.textContent = 'Connecting…';
 
-  await ensureAuth();
+  try {
+    await ensureAuth();
 
-  const myRoomId = await getOrCreateMyRoomId('My Room');
-  listenMyRoom(myRoomId);
+    const myRoomId = await getOrCreateMyRoomId('My Room');
+    listenMyRoom(myRoomId);
 
-  if (myCodeEl) myCodeEl.textContent = myRoomId;
-  if (statusText) statusText.textContent = 'Connected ✅';
+    if (myCodeEl) myCodeEl.textContent = myRoomId;
+    if (statusText) statusText.textContent = 'Connected ✅';
 
-  // auto-join last joined room (optional UX)
-  const lastJoined = localStorage.getItem('op_joined_room_id');
-  if (lastJoined) {
-    await joinRoom(lastJoined);
-    setJoinedEnabled(true);
+    // auto-join last joined room (optional UX)
+    const lastJoined = localStorage.getItem('op_joined_room_id');
+    if (lastJoined) {
+      await joinRoom(lastJoined);
+      setJoinedEnabled(true);
+    }
+
+    render();
+  } catch (e) {
+    console.error(e);
+    if (statusText) statusText.textContent = `Error: ${e?.code || 'unknown'}`;
+    alert(`Error: ${e?.code || e?.message || e}`);
   }
-
-  render();
 })();
 
 /* =========================
    JOIN ROOM
    ========================= */
-document.getElementById('mergeBtn').onclick = async () => {
-  const code = prompt('Join room code:');
-  if (!code) return;
+const joinBtn = document.getElementById('mergeBtn');
+if (joinBtn) {
+  joinBtn.onclick = async () => {
+    const code = prompt('Join room code:');
+    if (!code) return;
 
-  const roomId = code.trim();
-  await joinRoom(roomId);
+    const roomId = code.trim();
+    await joinRoom(roomId);
 
-  // αν πέτυχε, θα έχει μπει tabRoomIds.Soriris
-  if (tabRoomIds.Soriris) {
-    localStorage.setItem('op_joined_room_id', tabRoomIds.Soriris);
-    setJoinedEnabled(true);
-  }
+    // αν πέτυχε, θα έχει μπει tabRoomIds.Soriris
+    if (tabRoomIds.Soriris) {
+      localStorage.setItem('op_joined_room_id', tabRoomIds.Soriris);
+      setJoinedEnabled(true);
+    }
 
-  render();
-};
+    render();
+  };
+}
+
+/* =========================
+   IMPORT DEFAULT
+   ========================= */
+const importBtn = document.getElementById('importDefaultBtn');
+if (importBtn) {
+  importBtn.onclick = importDefaultIntoMyRoom;
+}
 
 /* =========================
    COPY MY CODE
@@ -88,7 +106,6 @@ if (copyBtn) {
       await navigator.clipboard.writeText(code);
       alert('Copied ✅');
     } catch {
-      // fallback
       prompt('Copy this code:', code);
     }
   };
@@ -97,16 +114,19 @@ if (copyBtn) {
 /* =========================
    SAVE LOCAL
    ========================= */
-document.getElementById('exportBtn').onclick = () => {
-  const snapshot = {
-    savedAt: Date.now(),
-    tabLabels,
-    tabRoomIds,
-    data
+const saveLocalBtn = document.getElementById('exportBtn');
+if (saveLocalBtn) {
+  saveLocalBtn.onclick = () => {
+    const snapshot = {
+      savedAt: Date.now(),
+      tabLabels,
+      tabRoomIds,
+      data
+    };
+    localStorage.setItem('op_rooms_local_v1', JSON.stringify(snapshot));
+    alert('Saved locally ✅');
   };
-  localStorage.setItem('op_rooms_local_v1', JSON.stringify(snapshot));
-  alert('Saved locally ✅');
-};
+}
 
 /* =========================
    RENAME MY ROOM
@@ -124,14 +144,11 @@ if (renameBtn) {
    ========================= */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
-    // ignore clicks on disabled joined tab
     if (tab.disabled) return;
 
-    document.querySelectorAll('.tab').forEach(t =>
-      t.classList.remove('active')
-    );
-
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
+
     setCurrentTab(tab.dataset.tab);
     render();
   };
@@ -140,33 +157,44 @@ document.querySelectorAll('.tab').forEach(tab => {
 /* =========================
    SORT
    ========================= */
-document.getElementById('sortSelect').onchange = e => {
-  setSortMode(e.target.value);
-  render();
-};
+const sortSelect = document.getElementById('sortSelect');
+if (sortSelect) {
+  sortSelect.onchange = e => {
+    setSortMode(e.target.value);
+    render();
+  };
+}
 
 /* =========================
    ADD CARD
    ========================= */
-document.getElementById('addBtn').onclick = () => {
-  openAddModal();
-};
+const addBtn = document.getElementById('addBtn');
+if (addBtn) {
+  addBtn.onclick = () => openAddModal();
+}
 
 /* =========================
    SEARCH & FILTER
    ========================= */
-document.getElementById('searchInput').oninput = render;
-document.getElementById('filterSelect').onchange = render;
+const searchInput = document.getElementById('searchInput');
+if (searchInput) searchInput.oninput = render;
+
+const filterSelect = document.getElementById('filterSelect');
+if (filterSelect) filterSelect.onchange = render;
 
 /* =========================
    TOTAL TAB PREFERENCE
    ========================= */
-document.getElementById('totalSourceSelect').onchange = e => {
-  setTotalPreference(e.target.value);
-  render();
-};
+const totalSourceSelect = document.getElementById('totalSourceSelect');
+if (totalSourceSelect) {
+  totalSourceSelect.onchange = e => {
+    setTotalPreference(e.target.value);
+    render();
+  };
+}
 
 /* =========================
    TRADE
    ========================= */
-document.getElementById('tradeBtn').onclick = openTradeModal;
+const tradeBtn = document.getElementById('tradeBtn');
+if (tradeBtn) tradeBtn.onclick = openTradeModal;
