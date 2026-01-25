@@ -130,10 +130,19 @@ export async function renameMyRoom(newName) {
   const name = (newName || "").trim();
   if (!name) return;
 
-  await update(ref(window.firebaseDB, `rooms/${roomId}/meta`), {
-    name,
-    updatedAt: Date.now()
-  });
+  try {
+    await update(ref(window.firebaseDB, `rooms/${roomId}/meta`), {
+      name,
+      updatedAt: Date.now()
+    });
+
+    // ✅ άμεση ενημέρωση UI
+    setTabLabel("Marira", name);
+    render();
+  } catch (e) {
+    console.error("Rename failed:", e);
+    alert("Rename failed (permission?)");
+  }
 }
 
 /* =========================
