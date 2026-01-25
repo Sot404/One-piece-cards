@@ -145,6 +145,51 @@ export async function renameMyRoom(newName) {
   }
 }
 
+export async function importDefaultIntoMyRoom() {
+  const myRoomId = tabRoomIds.Marira;
+  if (!myRoomId) {
+    alert("My room not ready yet");
+    return;
+  }
+
+  // Διάλεξε ΜΟΝΟ ένα source κάθε φορά
+  const choice = prompt('Import from DEFAULT: type "Marira" or "Soriris"', 'Marira');
+  if (!choice) return;
+
+  const src = choice.trim().toLowerCase();
+  if (src !== 'marira' && src !== 'soriris') {
+    alert('Invalid choice. Type Marira or Soriris');
+    return;
+  }
+
+  // Read DEFAULT (παλιό room με 2 λίστες)
+  const snap = await get(ref(window.firebaseDB, 'rooms/DEFAULT'));
+  if (!snap.exists()) {
+    alert('DEFAULT room not found');
+    return;
+  }
+
+  const incoming = snap.val() || {};
+  const imported = (src === 'marira' ? (incoming.Marira || {}) : (incoming.Soriris || {}));
+
+  // ✅ Overwrite το My Room (όχι merge) — αυτό είναι "import"
+  data.Marira = imported;
+
+  // Save στο δικό σου room
+  try {
+    await update(ref(window.firebaseDB, `rooms/${myRoomId}`), {
+      Marira: data.Marira,
+      meta: { updatedAt: Date.now() }
+    });
+
+    render();
+    alert(`Imported DEFAULT.${src === 'marira' ? 'Marira' : 'Soriris'} into My Room ✅`);
+  } catch (e) {
+    console.error("Import failed:", e);
+    alert("Import failed (permission?)");
+  }
+}
+
 /* =========================
    SAVE TO FIREBASE
    - γράφει στο room που αντιστοιχεί στο currentTab
